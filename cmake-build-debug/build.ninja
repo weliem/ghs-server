@@ -1,0 +1,320 @@
+## This file contains all the build statements describing the
+# compilation DAG.
+
+# =============================================================================
+# Write statements declared in CMakeLists.txt:
+# 
+# Which is the root file.
+# =============================================================================
+
+# =============================================================================
+# Project: test
+# Configurations: Debug
+# =============================================================================
+
+#############################################
+# Minimal version of Ninja required by this file
+
+ninja_required_version = 1.5
+
+
+#############################################
+# Set configuration variable for custom commands.
+
+CONFIGURATION = Debug
+# =============================================================================
+# Include auxiliary files.
+
+
+#############################################
+# Include rules file.
+
+include CMakeFiles/rules.ninja
+
+# =============================================================================
+
+#############################################
+# Logical path to working directory; prefix for absolute paths.
+
+cmake_ninja_workdir = /Users/NLY32485/Software/github/ghs-server/cmake-build-debug/
+
+#############################################
+# Utility command for edit_cache
+
+build CMakeFiles/edit_cache.util: CUSTOM_COMMAND
+  COMMAND = cd /Users/NLY32485/Software/github/ghs-server/cmake-build-debug && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+  DESC = No interactive CMake dialog available...
+  restat = 1
+
+build edit_cache: phony CMakeFiles/edit_cache.util
+
+
+#############################################
+# Utility command for rebuild_cache
+
+build CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
+  COMMAND = cd /Users/NLY32485/Software/github/ghs-server/cmake-build-debug && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake --regenerate-during-build -S/Users/NLY32485/Software/github/ghs-server -B/Users/NLY32485/Software/github/ghs-server/cmake-build-debug
+  DESC = Running CMake to regenerate build system...
+  pool = console
+  restat = 1
+
+build rebuild_cache: phony CMakeFiles/rebuild_cache.util
+
+# =============================================================================
+# Write statements declared in CMakeLists.txt:
+# /Users/NLY32485/Software/github/ghs-server/CMakeLists.txt
+# =============================================================================
+
+# =============================================================================
+# Object build statements for STATIC_LIBRARY target Binc
+
+
+#############################################
+# Order-only phony target for Binc
+
+build cmake_object_order_depends_target_Binc: phony || binc/CMakeFiles/Binc.dir
+
+build binc/CMakeFiles/Binc.dir/adapter.c.o: C_COMPILER__Binc_Debug /Users/NLY32485/Software/github/ghs-server/binc/adapter.c || cmake_object_order_depends_target_Binc
+  DEP_FILE = binc/CMakeFiles/Binc.dir/adapter.c.o.d
+  FLAGS = -Wall -Werror -Wextra -Wno-unused-function -Wno-unused-parameter -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -std=gnu99
+  INCLUDES = -I/usr/local/Cellar/libffi/3.4.2/include -I/usr/local/Cellar/glib/2.72.0/include -I/usr/local/Cellar/glib/2.72.0/include/glib-2.0 -I/usr/local/Cellar/glib/2.72.0/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.45/include -I/Users/NLY32485/Software/github/ghs-server/binc
+  OBJECT_DIR = binc/CMakeFiles/Binc.dir
+  OBJECT_FILE_DIR = binc/CMakeFiles/Binc.dir
+
+build binc/CMakeFiles/Binc.dir/advertisement.c.o: C_COMPILER__Binc_Debug /Users/NLY32485/Software/github/ghs-server/binc/advertisement.c || cmake_object_order_depends_target_Binc
+  DEP_FILE = binc/CMakeFiles/Binc.dir/advertisement.c.o.d
+  FLAGS = -Wall -Werror -Wextra -Wno-unused-function -Wno-unused-parameter -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -std=gnu99
+  INCLUDES = -I/usr/local/Cellar/libffi/3.4.2/include -I/usr/local/Cellar/glib/2.72.0/include -I/usr/local/Cellar/glib/2.72.0/include/glib-2.0 -I/usr/local/Cellar/glib/2.72.0/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.45/include -I/Users/NLY32485/Software/github/ghs-server/binc
+  OBJECT_DIR = binc/CMakeFiles/Binc.dir
+  OBJECT_FILE_DIR = binc/CMakeFiles/Binc.dir
+
+build binc/CMakeFiles/Binc.dir/agent.c.o: C_COMPILER__Binc_Debug /Users/NLY32485/Software/github/ghs-server/binc/agent.c || cmake_object_order_depends_target_Binc
+  DEP_FILE = binc/CMakeFiles/Binc.dir/agent.c.o.d
+  FLAGS = -Wall -Werror -Wextra -Wno-unused-function -Wno-unused-parameter -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -std=gnu99
+  INCLUDES = -I/usr/local/Cellar/libffi/3.4.2/include -I/usr/local/Cellar/glib/2.72.0/include -I/usr/local/Cellar/glib/2.72.0/include/glib-2.0 -I/usr/local/Cellar/glib/2.72.0/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.45/include -I/Users/NLY32485/Software/github/ghs-server/binc
+  OBJECT_DIR = binc/CMakeFiles/Binc.dir
+  OBJECT_FILE_DIR = binc/CMakeFiles/Binc.dir
+
+build binc/CMakeFiles/Binc.dir/application.c.o: C_COMPILER__Binc_Debug /Users/NLY32485/Software/github/ghs-server/binc/application.c || cmake_object_order_depends_target_Binc
+  DEP_FILE = binc/CMakeFiles/Binc.dir/application.c.o.d
+  FLAGS = -Wall -Werror -Wextra -Wno-unused-function -Wno-unused-parameter -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -std=gnu99
+  INCLUDES = -I/usr/local/Cellar/libffi/3.4.2/include -I/usr/local/Cellar/glib/2.72.0/include -I/usr/local/Cellar/glib/2.72.0/include/glib-2.0 -I/usr/local/Cellar/glib/2.72.0/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.45/include -I/Users/NLY32485/Software/github/ghs-server/binc
+  OBJECT_DIR = binc/CMakeFiles/Binc.dir
+  OBJECT_FILE_DIR = binc/CMakeFiles/Binc.dir
+
+build binc/CMakeFiles/Binc.dir/characteristic.c.o: C_COMPILER__Binc_Debug /Users/NLY32485/Software/github/ghs-server/binc/characteristic.c || cmake_object_order_depends_target_Binc
+  DEP_FILE = binc/CMakeFiles/Binc.dir/characteristic.c.o.d
+  FLAGS = -Wall -Werror -Wextra -Wno-unused-function -Wno-unused-parameter -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -std=gnu99
+  INCLUDES = -I/usr/local/Cellar/libffi/3.4.2/include -I/usr/local/Cellar/glib/2.72.0/include -I/usr/local/Cellar/glib/2.72.0/include/glib-2.0 -I/usr/local/Cellar/glib/2.72.0/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.45/include -I/Users/NLY32485/Software/github/ghs-server/binc
+  OBJECT_DIR = binc/CMakeFiles/Binc.dir
+  OBJECT_FILE_DIR = binc/CMakeFiles/Binc.dir
+
+build binc/CMakeFiles/Binc.dir/descriptor.c.o: C_COMPILER__Binc_Debug /Users/NLY32485/Software/github/ghs-server/binc/descriptor.c || cmake_object_order_depends_target_Binc
+  DEP_FILE = binc/CMakeFiles/Binc.dir/descriptor.c.o.d
+  FLAGS = -Wall -Werror -Wextra -Wno-unused-function -Wno-unused-parameter -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -std=gnu99
+  INCLUDES = -I/usr/local/Cellar/libffi/3.4.2/include -I/usr/local/Cellar/glib/2.72.0/include -I/usr/local/Cellar/glib/2.72.0/include/glib-2.0 -I/usr/local/Cellar/glib/2.72.0/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.45/include -I/Users/NLY32485/Software/github/ghs-server/binc
+  OBJECT_DIR = binc/CMakeFiles/Binc.dir
+  OBJECT_FILE_DIR = binc/CMakeFiles/Binc.dir
+
+build binc/CMakeFiles/Binc.dir/device.c.o: C_COMPILER__Binc_Debug /Users/NLY32485/Software/github/ghs-server/binc/device.c || cmake_object_order_depends_target_Binc
+  DEP_FILE = binc/CMakeFiles/Binc.dir/device.c.o.d
+  FLAGS = -Wall -Werror -Wextra -Wno-unused-function -Wno-unused-parameter -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -std=gnu99
+  INCLUDES = -I/usr/local/Cellar/libffi/3.4.2/include -I/usr/local/Cellar/glib/2.72.0/include -I/usr/local/Cellar/glib/2.72.0/include/glib-2.0 -I/usr/local/Cellar/glib/2.72.0/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.45/include -I/Users/NLY32485/Software/github/ghs-server/binc
+  OBJECT_DIR = binc/CMakeFiles/Binc.dir
+  OBJECT_FILE_DIR = binc/CMakeFiles/Binc.dir
+
+build binc/CMakeFiles/Binc.dir/logger.c.o: C_COMPILER__Binc_Debug /Users/NLY32485/Software/github/ghs-server/binc/logger.c || cmake_object_order_depends_target_Binc
+  DEP_FILE = binc/CMakeFiles/Binc.dir/logger.c.o.d
+  FLAGS = -Wall -Werror -Wextra -Wno-unused-function -Wno-unused-parameter -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -std=gnu99
+  INCLUDES = -I/usr/local/Cellar/libffi/3.4.2/include -I/usr/local/Cellar/glib/2.72.0/include -I/usr/local/Cellar/glib/2.72.0/include/glib-2.0 -I/usr/local/Cellar/glib/2.72.0/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.45/include -I/Users/NLY32485/Software/github/ghs-server/binc
+  OBJECT_DIR = binc/CMakeFiles/Binc.dir
+  OBJECT_FILE_DIR = binc/CMakeFiles/Binc.dir
+
+build binc/CMakeFiles/Binc.dir/parser.c.o: C_COMPILER__Binc_Debug /Users/NLY32485/Software/github/ghs-server/binc/parser.c || cmake_object_order_depends_target_Binc
+  DEP_FILE = binc/CMakeFiles/Binc.dir/parser.c.o.d
+  FLAGS = -Wall -Werror -Wextra -Wno-unused-function -Wno-unused-parameter -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -std=gnu99
+  INCLUDES = -I/usr/local/Cellar/libffi/3.4.2/include -I/usr/local/Cellar/glib/2.72.0/include -I/usr/local/Cellar/glib/2.72.0/include/glib-2.0 -I/usr/local/Cellar/glib/2.72.0/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.45/include -I/Users/NLY32485/Software/github/ghs-server/binc
+  OBJECT_DIR = binc/CMakeFiles/Binc.dir
+  OBJECT_FILE_DIR = binc/CMakeFiles/Binc.dir
+
+build binc/CMakeFiles/Binc.dir/service.c.o: C_COMPILER__Binc_Debug /Users/NLY32485/Software/github/ghs-server/binc/service.c || cmake_object_order_depends_target_Binc
+  DEP_FILE = binc/CMakeFiles/Binc.dir/service.c.o.d
+  FLAGS = -Wall -Werror -Wextra -Wno-unused-function -Wno-unused-parameter -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -std=gnu99
+  INCLUDES = -I/usr/local/Cellar/libffi/3.4.2/include -I/usr/local/Cellar/glib/2.72.0/include -I/usr/local/Cellar/glib/2.72.0/include/glib-2.0 -I/usr/local/Cellar/glib/2.72.0/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.45/include -I/Users/NLY32485/Software/github/ghs-server/binc
+  OBJECT_DIR = binc/CMakeFiles/Binc.dir
+  OBJECT_FILE_DIR = binc/CMakeFiles/Binc.dir
+
+build binc/CMakeFiles/Binc.dir/utility.c.o: C_COMPILER__Binc_Debug /Users/NLY32485/Software/github/ghs-server/binc/utility.c || cmake_object_order_depends_target_Binc
+  DEP_FILE = binc/CMakeFiles/Binc.dir/utility.c.o.d
+  FLAGS = -Wall -Werror -Wextra -Wno-unused-function -Wno-unused-parameter -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -std=gnu99
+  INCLUDES = -I/usr/local/Cellar/libffi/3.4.2/include -I/usr/local/Cellar/glib/2.72.0/include -I/usr/local/Cellar/glib/2.72.0/include/glib-2.0 -I/usr/local/Cellar/glib/2.72.0/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.45/include -I/Users/NLY32485/Software/github/ghs-server/binc
+  OBJECT_DIR = binc/CMakeFiles/Binc.dir
+  OBJECT_FILE_DIR = binc/CMakeFiles/Binc.dir
+
+
+# =============================================================================
+# Link build statements for STATIC_LIBRARY target Binc
+
+
+#############################################
+# Link the static library binc/libBinc.a
+
+build binc/libBinc.a: C_STATIC_LIBRARY_LINKER__Binc_Debug binc/CMakeFiles/Binc.dir/adapter.c.o binc/CMakeFiles/Binc.dir/advertisement.c.o binc/CMakeFiles/Binc.dir/agent.c.o binc/CMakeFiles/Binc.dir/application.c.o binc/CMakeFiles/Binc.dir/characteristic.c.o binc/CMakeFiles/Binc.dir/descriptor.c.o binc/CMakeFiles/Binc.dir/device.c.o binc/CMakeFiles/Binc.dir/logger.c.o binc/CMakeFiles/Binc.dir/parser.c.o binc/CMakeFiles/Binc.dir/service.c.o binc/CMakeFiles/Binc.dir/utility.c.o
+  ARCH_FLAGS = -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk
+  LANGUAGE_COMPILE_FLAGS = -Wall -Werror -Wextra -Wno-unused-function -Wno-unused-parameter -g
+  OBJECT_DIR = binc/CMakeFiles/Binc.dir
+  POST_BUILD = :
+  PRE_LINK = :
+  TARGET_FILE = binc/libBinc.a
+  TARGET_PDB = Binc.a.dbg
+
+
+#############################################
+# Utility command for edit_cache
+
+build binc/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
+  COMMAND = cd /Users/NLY32485/Software/github/ghs-server/cmake-build-debug/binc && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+  DESC = No interactive CMake dialog available...
+  restat = 1
+
+build binc/edit_cache: phony binc/CMakeFiles/edit_cache.util
+
+
+#############################################
+# Utility command for rebuild_cache
+
+build binc/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
+  COMMAND = cd /Users/NLY32485/Software/github/ghs-server/cmake-build-debug/binc && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake --regenerate-during-build -S/Users/NLY32485/Software/github/ghs-server -B/Users/NLY32485/Software/github/ghs-server/cmake-build-debug
+  DESC = Running CMake to regenerate build system...
+  pool = console
+  restat = 1
+
+build binc/rebuild_cache: phony binc/CMakeFiles/rebuild_cache.util
+
+# =============================================================================
+# Write statements declared in CMakeLists.txt:
+# /Users/NLY32485/Software/github/ghs-server/CMakeLists.txt
+# =============================================================================
+
+# =============================================================================
+# Object build statements for EXECUTABLE target peripheral
+
+
+#############################################
+# Order-only phony target for peripheral
+
+build cmake_object_order_depends_target_peripheral: phony || cmake_object_order_depends_target_Binc
+
+build examples/peripheral/CMakeFiles/peripheral.dir/peripheral.c.o: C_COMPILER__peripheral_Debug /Users/NLY32485/Software/github/ghs-server/examples/peripheral/peripheral.c || cmake_object_order_depends_target_peripheral
+  DEP_FILE = examples/peripheral/CMakeFiles/peripheral.dir/peripheral.c.o.d
+  FLAGS = -Wall -Werror -Wextra -Wno-unused-function -Wno-unused-parameter -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk -std=gnu99
+  INCLUDES = -I/usr/local/Cellar/libffi/3.4.2/include -I/usr/local/Cellar/glib/2.72.0/include -I/usr/local/Cellar/glib/2.72.0/include/glib-2.0 -I/usr/local/Cellar/glib/2.72.0/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.45/include -I/Users/NLY32485/Software/github/ghs-server/binc
+  OBJECT_DIR = examples/peripheral/CMakeFiles/peripheral.dir
+  OBJECT_FILE_DIR = examples/peripheral/CMakeFiles/peripheral.dir
+
+
+# =============================================================================
+# Link build statements for EXECUTABLE target peripheral
+
+
+#############################################
+# Link the executable examples/peripheral/peripheral
+
+build examples/peripheral/peripheral: C_EXECUTABLE_LINKER__peripheral_Debug examples/peripheral/CMakeFiles/peripheral.dir/peripheral.c.o | binc/libBinc.a || binc/libBinc.a
+  FLAGS = -Wall -Werror -Wextra -Wno-unused-function -Wno-unused-parameter -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk
+  LINK_LIBRARIES = binc/libBinc.a  -lgio-2.0  -lgobject-2.0  -lglib-2.0  -lintl  -lm
+  OBJECT_DIR = examples/peripheral/CMakeFiles/peripheral.dir
+  POST_BUILD = :
+  PRE_LINK = :
+  TARGET_FILE = examples/peripheral/peripheral
+  TARGET_PDB = peripheral.dbg
+
+
+#############################################
+# Utility command for edit_cache
+
+build examples/peripheral/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
+  COMMAND = cd /Users/NLY32485/Software/github/ghs-server/cmake-build-debug/examples/peripheral && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+  DESC = No interactive CMake dialog available...
+  restat = 1
+
+build examples/peripheral/edit_cache: phony examples/peripheral/CMakeFiles/edit_cache.util
+
+
+#############################################
+# Utility command for rebuild_cache
+
+build examples/peripheral/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
+  COMMAND = cd /Users/NLY32485/Software/github/ghs-server/cmake-build-debug/examples/peripheral && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake --regenerate-during-build -S/Users/NLY32485/Software/github/ghs-server -B/Users/NLY32485/Software/github/ghs-server/cmake-build-debug
+  DESC = Running CMake to regenerate build system...
+  pool = console
+  restat = 1
+
+build examples/peripheral/rebuild_cache: phony examples/peripheral/CMakeFiles/rebuild_cache.util
+
+# =============================================================================
+# Target aliases.
+
+build Binc: phony binc/libBinc.a
+
+build libBinc.a: phony binc/libBinc.a
+
+build peripheral: phony examples/peripheral/peripheral
+
+# =============================================================================
+# Folder targets.
+
+# =============================================================================
+
+#############################################
+# Folder: /Users/NLY32485/Software/github/ghs-server/cmake-build-debug
+
+build all: phony binc/all examples/peripheral/all
+
+# =============================================================================
+
+#############################################
+# Folder: /Users/NLY32485/Software/github/ghs-server/cmake-build-debug/binc
+
+build binc/all: phony binc/libBinc.a
+
+# =============================================================================
+
+#############################################
+# Folder: /Users/NLY32485/Software/github/ghs-server/cmake-build-debug/examples/peripheral
+
+build examples/peripheral/all: phony examples/peripheral/peripheral
+
+# =============================================================================
+# Built-in targets
+
+
+#############################################
+# Re-run CMake if any of its inputs changed.
+
+build build.ninja: RERUN_CMAKE | ../CMakeLists.txt ../binc/CMakeLists.txt ../examples/peripheral/CMakeLists.txt /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/CMakeCInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/CMakeCommonLanguageInclude.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/CMakeGenericSystem.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/CMakeInitializeConfigs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/CMakeLanguageInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/CMakeSystemSpecificInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/CMakeSystemSpecificInitialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/Compiler/AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/Compiler/CMakeCommonCompilerMacros.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/Compiler/Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/Compiler/GNU.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/FindPackageHandleStandardArgs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/FindPackageMessage.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/FindPkgConfig.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/Platform/Apple-AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/Platform/Apple-Clang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/Platform/Apple-Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/Platform/Darwin-Initialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/Platform/Darwin.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.23.2/CMakeCCompiler.cmake CMakeFiles/3.23.2/CMakeSystem.cmake
+  pool = console
+
+
+#############################################
+# A missing CMake input file is not an error.
+
+build ../CMakeLists.txt ../binc/CMakeLists.txt ../examples/peripheral/CMakeLists.txt /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/CMakeCInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/CMakeCommonLanguageInclude.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/CMakeGenericSystem.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/CMakeInitializeConfigs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/CMakeLanguageInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/CMakeSystemSpecificInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/CMakeSystemSpecificInitialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/Compiler/AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/Compiler/CMakeCommonCompilerMacros.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/Compiler/Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/Compiler/GNU.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/FindPackageHandleStandardArgs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/FindPackageMessage.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/FindPkgConfig.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/Platform/Apple-AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/Platform/Apple-Clang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/Platform/Apple-Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/Platform/Darwin-Initialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/Platform/Darwin.cmake /Applications/CLion.app/Contents/bin/cmake/mac/share/cmake-3.23/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.23.2/CMakeCCompiler.cmake CMakeFiles/3.23.2/CMakeSystem.cmake: phony
+
+
+#############################################
+# Clean all the built files.
+
+build clean: CLEAN
+
+
+#############################################
+# Print all primary targets available.
+
+build help: HELP
+
+
+#############################################
+# Make the all target the default.
+
+default all

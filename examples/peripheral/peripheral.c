@@ -34,9 +34,21 @@
 #include "parser.h"
 
 #define TAG "Main"
-#define HTS_SERVICE_UUID "00001809-0000-1000-8000-00805f9b34fb"
-#define TEMPERATURE_CHAR_UUID "00002a1c-0000-1000-8000-00805f9b34fb"
-#define CUD_CHAR "00002901-0000-1000-8000-00805f9b34fb"
+
+
+#define GHS_SERVICE_UUID "00007f44-0000-1000-8000-00805f9b34fb"
+#define OBSERVATION_CHARACTERISTIC_UUID "00007f43-0000-1000-8000-00805f9b34fb"
+#define STORED_OBSERVATIONS_CHARACTERISTIC_UUID "00007f42-0000-1000-8000-00805f9b34fb"
+#define GHS_FEATURES_CHARACTERISTIC_UUID "00007f41-0000-1000-8000-00805f9b34fb"
+#define GHS_CONTROL_POINT_CHARACTERISTIC_UUID "00007f40-0000-1000-8000-00805f9b34fb"
+#define RACP_CHARACTERISTIC_UUID "00002a52-0000-1000-8000-00805f9b34fb"
+#define OBSERVATION_SCHEDULE_CHANGED_CHARACTERISTIC_UUID "00007f3f-0000-1000-8000-00805f9b34fb"
+#define OBSERVATION_SCHEDULE_DESCRIPTOR_UUID "00007f35-0000-1000-8000-00805f9b34fb"
+#define VALID_RANGE_AND_ACCURACY_DESCRIPTOR_UUID "00007f34-0000-1000-8000-00805f9b34fb"
+
+guint32 schedule_observation_MDC = 0;
+float schedule_measurement_period = 0.0f;
+float schedule_update_interval = 0.0f;
 
 GMainLoop *loop = NULL;
 Adapter *default_adapter = NULL;
@@ -60,7 +72,7 @@ void on_central_state_changed(Adapter *adapter, Device *device) {
 
 char *on_local_char_read(const Application *application, const char *address, const char *service_uuid,
                         const char *char_uuid) {
-    if (g_str_equal(service_uuid, HTS_SERVICE_UUID) && g_str_equal(char_uuid, TEMPERATURE_CHAR_UUID)) {
+    if (g_str_equal(service_uuid, GHS_SERVICE_UUID) && g_str_equal(char_uuid, OBSERVATION_SCHEDULE_CHANGED_CHARACTERISTIC_UUID)) {
         const guint8 bytes[] = {0x06, 0x6f, 0x01, 0x00, 0xff, 0xe6, 0x07, 0x03, 0x03, 0x10, 0x04, 0x00, 0x01};
         GByteArray *byteArray = g_byte_array_sized_new(sizeof(bytes));
         g_byte_array_append(byteArray, bytes, sizeof(bytes));
@@ -77,13 +89,6 @@ char *on_local_char_write(const Application *application, const char *address, c
 
 void on_local_char_start_notify(const Application *application, const char *service_uuid, const char *char_uuid) {
     log_debug(TAG, "on start notify");
-    if (g_str_equal(service_uuid, HTS_SERVICE_UUID) && g_str_equal(char_uuid, TEMPERATURE_CHAR_UUID)) {
-        const guint8 bytes[] = {0x06, 0x6A, 0x01, 0x00, 0xff, 0xe6, 0x07, 0x03, 0x03, 0x10, 0x04, 0x00, 0x01};
-        GByteArray *byteArray = g_byte_array_sized_new(sizeof(bytes));
-        g_byte_array_append(byteArray, bytes, sizeof(bytes));
-        binc_application_notify(application, service_uuid, char_uuid, byteArray);
-        g_byte_array_free(byteArray, TRUE);
-    }
 }
 
 void on_local_char_stop_notify(const Application *application, const char *service_uuid, const char *char_uuid) {
@@ -146,7 +151,7 @@ int main(void) {
 
         // Setup advertisement
         GPtrArray *adv_service_uuids = g_ptr_array_new();
-        g_ptr_array_add(adv_service_uuids, HTS_SERVICE_UUID);
+        g_ptr_array_add(adv_service_uuids, GHS_SERVICE_UUID);
 
         advertisement = binc_advertisement_create();
         binc_advertisement_set_local_name(advertisement, "BINC");
@@ -156,23 +161,34 @@ int main(void) {
 
         // Start application
         app = binc_create_application(default_adapter);
-        binc_application_add_service(app, HTS_SERVICE_UUID);
+        binc_application_add_service(app, GHS_SERVICE_UUID);
         binc_application_add_characteristic(
                 app,
-                HTS_SERVICE_UUID,
-                TEMPERATURE_CHAR_UUID,
+                GHS_SERVICE_UUID,
+                GHS_FEATURES_CHARACTERISTIC_UUID,
                 GATT_CHR_PROP_READ | GATT_CHR_PROP_INDICATE | GATT_CHR_PROP_WRITE);
+
+        binc_application_add_characteristic(
+                app,
+                GHS_SERVICE_UUID,
+                OBSERVATION_SCHEDULE_CHANGED_CHARACTERISTIC_UUID,
+                GATT_CHR_PROP_READ | GATT_CHR_PROP_INDICATE);
+
         binc_application_add_descriptor(
                 app,
-                HTS_SERVICE_UUID,
-                TEMPERATURE_CHAR_UUID,
-                CUD_CHAR,
+                GHS_SERVICE_UUID,
+                OBSERVATION_SCHEDULE_CHANGED_CHARACTERISTIC_UUID,
+                OBSERVATION_SCHEDULE_DESCRIPTOR_UUID,
                 GATT_CHR_PROP_READ | GATT_CHR_PROP_WRITE);
 
-        const guint8 cud[] = "hello there";
-        GByteArray *cudArray = g_byte_array_sized_new(sizeof(cud));
-        g_byte_array_append(cudArray, cud, sizeof(cud));
-        binc_application_set_desc_value(app, HTS_SERVICE_UUID, TEMPERATURE_CHAR_UUID, CUD_CHAR, cudArray);
+        const guint8 schedule_bytes[] = { 0,0,0,0,0,0,0,0,0,0,0,0};
+        GByteArray *scheduleByteArray = g_byte_array_sized_new(sizeof(schedule_bytes));
+        g_byte_array_append(scheduleByteArray, schedule_bytes, sizeof(schedule_bytes));
+        binc_application_set_desc_value(app,
+                                        GHS_SERVICE_UUID,
+                                        OBSERVATION_SCHEDULE_CHANGED_CHARACTERISTIC_UUID,
+                                        OBSERVATION_SCHEDULE_DESCRIPTOR_UUID,
+                                        scheduleByteArray);
 
         binc_application_set_char_read_cb(app, &on_local_char_read);
         binc_application_set_char_write_cb(app, &on_local_char_write);

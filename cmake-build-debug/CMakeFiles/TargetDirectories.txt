@@ -1,0 +1,8 @@
+/Users/NLY32485/Software/github/ghs-server/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/NLY32485/Software/github/ghs-server/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/NLY32485/Software/github/ghs-server/cmake-build-debug/binc/CMakeFiles/Binc.dir
+/Users/NLY32485/Software/github/ghs-server/cmake-build-debug/binc/CMakeFiles/edit_cache.dir
+/Users/NLY32485/Software/github/ghs-server/cmake-build-debug/binc/CMakeFiles/rebuild_cache.dir
+/Users/NLY32485/Software/github/ghs-server/cmake-build-debug/examples/peripheral/CMakeFiles/peripheral.dir
+/Users/NLY32485/Software/github/ghs-server/cmake-build-debug/examples/peripheral/CMakeFiles/edit_cache.dir
+/Users/NLY32485/Software/github/ghs-server/cmake-build-debug/examples/peripheral/CMakeFiles/rebuild_cache.dir
