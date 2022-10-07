@@ -183,7 +183,7 @@ int main(void) {
         g_ptr_array_free(adv_service_uuids, TRUE);
         binc_adapter_start_advertising(default_adapter, advertisement);
 
-        // Start application
+        // Setup all services, characteristics and descriptors
         app = binc_create_application(default_adapter);
         binc_application_add_service(app, DIS_SERVICE_UUID);
         binc_application_add_characteristic(
@@ -223,7 +223,7 @@ int main(void) {
                 OBSERVATION_SCHEDULE_DESCRIPTOR_UUID,
                 GATT_CHR_PROP_READ | GATT_CHR_PROP_WRITE);
 
-//        const guint8 schedule_bytes[] = { 0,0,0,0,0,0,0,0,0,0,0,0};
+        // Set initial value for Observation Schedule Descriptor
         Parser *parser = parser_create_empty(LITTLE_ENDIAN);
         parser_set_uint32(parser, MDC_PULS_OXIM_SAT_O2);
         parser_set_float(parser, 1.0f, 1);
@@ -234,9 +234,9 @@ int main(void) {
                                         GHS_FEATURES_CHARACTERISTIC_UUID,
                                         OBSERVATION_SCHEDULE_DESCRIPTOR_UUID,
                                         scheduleByteArray);
-//        g_byte_array_free(scheduleByteArray, TRUE);
         parser_free(parser);
 
+        // Setup callbacks
         binc_application_set_desc_write_cb(app, &on_local_desc_write);
         binc_application_set_char_start_notify_cb(app, &on_local_char_start_notify);
         binc_application_set_char_stop_notify_cb(app, &on_local_char_stop_notify);
