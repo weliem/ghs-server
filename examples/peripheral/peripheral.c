@@ -208,7 +208,7 @@ int main(void) {
                 app,
                 GHS_SERVICE_UUID,
                 GHS_FEATURES_CHARACTERISTIC_UUID,
-                GATT_CHR_PROP_READ | GATT_CHR_PROP_INDICATE);
+                GATT_CHR_PROP_READ);
 
         binc_application_add_characteristic(
                 app,
@@ -231,7 +231,7 @@ int main(void) {
         GByteArray *scheduleByteArray = parser_get_byte_array(parser);
         binc_application_set_desc_value(app,
                                         GHS_SERVICE_UUID,
-                                        OBSERVATION_SCHEDULE_CHANGED_CHARACTERISTIC_UUID,
+                                        GHS_FEATURES_CHARACTERISTIC_UUID,
                                         OBSERVATION_SCHEDULE_DESCRIPTOR_UUID,
                                         scheduleByteArray);
         g_byte_array_free(scheduleByteArray, TRUE);
