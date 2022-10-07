@@ -234,7 +234,7 @@ int main(void) {
                                         GHS_FEATURES_CHARACTERISTIC_UUID,
                                         OBSERVATION_SCHEDULE_DESCRIPTOR_UUID,
                                         scheduleByteArray);
-        g_byte_array_free(scheduleByteArray, TRUE);
+//        g_byte_array_free(scheduleByteArray, TRUE);
         parser_free(parser);
 
         binc_application_set_desc_write_cb(app, &on_local_desc_write);
