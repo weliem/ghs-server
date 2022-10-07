@@ -36,7 +36,8 @@ typedef struct parser_instance Parser;
  * @param byteOrder either LITTLE_ENDIAN or BIG_ENDIAN
  * @return parser object
  */
-Parser *parser_create(const GByteArray *bytes, int byteOrder);
+Parser *parser_create(GByteArray *bytes, int byteOrder);
+Parser *parser_create_empty(int byteOrder);
 
 void parser_set_offset(Parser *parser, guint offset);
 
@@ -65,5 +66,10 @@ GByteArray* binc_get_date_time();
 GByteArray *binc_get_current_time();
 
 GString *parser_get_string(Parser *parser);
+
+void parser_set_uint16(Parser *parser, guint16 value);
+void parser_set_uint32(Parser *parser, guint32 value);
+void parser_set_float(Parser *parser, float value, guint8 precision);
+GByteArray* parser_get_byte_array(Parser *parser);
 
 #endif //BINC_PARSER_H

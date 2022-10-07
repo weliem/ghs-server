@@ -36,6 +36,10 @@
 #define TAG "Main"
 
 
+#define DIS_SERVICE_UUID "0000180a-0000-1000-8000-00805f9b34fb"
+#define DIS_MANUFACTURER_UUID "00002a29-0000-1000-8000-00805f9b34fb"
+#define DIS_MODEL_NUMBER_UUID "00002a24-0000-1000-8000-00805f9b34fb"
+
 #define GHS_SERVICE_UUID "00007f44-0000-1000-8000-00805f9b34fb"
 #define OBSERVATION_CHARACTERISTIC_UUID "00007f43-0000-1000-8000-00805f9b34fb"
 #define STORED_OBSERVATIONS_CHARACTERISTIC_UUID "00007f42-0000-1000-8000-00805f9b34fb"
@@ -76,7 +80,7 @@ char *on_local_desc_write(const Application *application, const char *address,
         return BLUEZ_ERROR_REJECTED;
     }
 
-    Parser *parser = parser_create(byteArray, LITTLE_ENDIAN);
+    Parser *parser = parser_create((GByteArray*)byteArray, LITTLE_ENDIAN);
     const guint32 mdc = parser_get_uint32(parser);
     const double schedule_measurement_period = parser_get_float(parser);
     const double schedule_update_interval = parser_get_float(parser);
@@ -92,7 +96,6 @@ char *on_local_desc_write(const Application *application, const char *address,
     if (schedule_update_interval < schedule_measurement_period || schedule_update_interval > 10) {
         return BLUEZ_ERROR_REJECTED;
     }
-
 
     if (binc_application_char_is_notifying(
             application,
@@ -182,7 +185,25 @@ int main(void) {
 
         // Start application
         app = binc_create_application(default_adapter);
+        binc_application_add_service(app, DIS_SERVICE_UUID);
+        binc_application_add_characteristic(
+                app,
+                DIS_SERVICE_UUID,
+                DIS_MANUFACTURER_UUID,
+                GATT_CHR_PROP_READ);
+        binc_application_add_characteristic(
+                app,
+                DIS_SERVICE_UUID,
+                DIS_MODEL_NUMBER_UUID,
+                GATT_CHR_PROP_READ);
+
         binc_application_add_service(app, GHS_SERVICE_UUID);
+        binc_application_add_characteristic(
+                app,
+                GHS_SERVICE_UUID,
+                OBSERVATION_CHARACTERISTIC_UUID,
+                GATT_CHR_PROP_READ | GATT_CHR_PROP_INDICATE);
+
         binc_application_add_characteristic(
                 app,
                 GHS_SERVICE_UUID,
@@ -202,14 +223,19 @@ int main(void) {
                 OBSERVATION_SCHEDULE_DESCRIPTOR_UUID,
                 GATT_CHR_PROP_READ | GATT_CHR_PROP_WRITE);
 
-        const guint8 schedule_bytes[] = { 0,0,0,0,0,0,0,0,0,0,0,0};
-        GByteArray *scheduleByteArray = g_byte_array_sized_new(sizeof(schedule_bytes));
-        g_byte_array_append(scheduleByteArray, schedule_bytes, sizeof(schedule_bytes));
+//        const guint8 schedule_bytes[] = { 0,0,0,0,0,0,0,0,0,0,0,0};
+        Parser *parser = parser_create_empty(LITTLE_ENDIAN);
+        parser_set_uint32(parser, MDC_PULS_OXIM_SAT_O2);
+        parser_set_float(parser, 1.0f, 1);
+        parser_set_float(parser, 1.0f, 1);
+        GByteArray *scheduleByteArray = parser_get_byte_array(parser);
         binc_application_set_desc_value(app,
                                         GHS_SERVICE_UUID,
                                         OBSERVATION_SCHEDULE_CHANGED_CHARACTERISTIC_UUID,
                                         OBSERVATION_SCHEDULE_DESCRIPTOR_UUID,
                                         scheduleByteArray);
+        g_byte_array_free(scheduleByteArray, TRUE);
+        parser_free(parser);
 
         binc_application_set_desc_write_cb(app, &on_local_desc_write);
         binc_application_set_char_start_notify_cb(app, &on_local_char_start_notify);

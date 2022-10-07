@@ -23,6 +23,7 @@
 
 #include "parser.h"
 #include "math.h"
+#include "logger.h"
 #include <time.h>
 
 // IEEE 11073 Reserved float values
@@ -35,7 +36,7 @@ typedef enum {
 } ReservedFloatValues;
 
 struct parser_instance {
-    const GByteArray *bytes;
+    GByteArray *bytes;
     guint offset;
     int byteOrder;
 };
@@ -43,7 +44,15 @@ struct parser_instance {
 static const double reserved_float_values[5] = {MDER_POSITIVE_INFINITY, MDER_NaN, MDER_NaN, MDER_NaN,
                                                 MDER_NEGATIVE_INFINITY};
 
-Parser *parser_create(const GByteArray *bytes, int byteOrder) {
+Parser *parser_create_empty(int byteOrder) {
+    Parser *parser = g_new0(Parser, 1);
+    parser->bytes = g_byte_array_new();
+    parser->offset = 0;
+    parser->byteOrder = byteOrder;
+    return parser;
+}
+
+Parser *parser_create(GByteArray *bytes, int byteOrder) {
     Parser *parser = g_new0(Parser, 1);
     parser->bytes = bytes;
     parser->offset = 0;
@@ -262,3 +271,76 @@ GByteArray *binc_get_date_time() {
     g_byte_array_append(byteArray, &seconds, 1);
     return byteArray;
 }
+
+static void prepare_byte_array(Parser *parser, guint required_length) {
+    GByteArray  *result = g_byte_array_set_size(parser->bytes, required_length);
+    if (result != parser->bytes) {
+        log_debug("parser", "got a new array");
+    }
+}
+
+static int intToSignedBits(const int i, int size) {
+    if (i < 0) {
+        return (1 << (size - 1)) + (i & ((1 << (size - 1)) - 1));
+    }
+    return i;
+}
+
+void parser_set_uint16(Parser *parser, const guint16 value) {
+    prepare_byte_array(parser, parser->offset + 2);
+
+    if (parser->byteOrder == LITTLE_ENDIAN) {
+        parser->bytes->data[parser->offset] = (value & 0xFF);
+        parser->bytes->data[parser->offset + 1] = (value >> 8);
+    } else {
+        parser->bytes->data[parser->offset] = (value >> 8);
+        parser->bytes->data[parser->offset + 1] = (value & 0xFF);
+    }
+    parser->offset += 2;
+}
+
+void parser_set_uint32(Parser *parser, const guint32 value) {
+    prepare_byte_array(parser, parser->offset + 4);
+
+    if (parser->byteOrder == LITTLE_ENDIAN) {
+        parser->bytes->data[parser->offset] = (value & 0xFF);
+        parser->bytes->data[parser->offset + 1] = (value >> 8);
+        parser->bytes->data[parser->offset + 2] = (value >> 16);
+        parser->bytes->data[parser->offset + 3] = (value >> 24);
+    } else {
+        parser->bytes->data[parser->offset] = (value >> 24);
+        parser->bytes->data[parser->offset + 1] = (value >> 16);
+        parser->bytes->data[parser->offset + 2] = (value >> 8);
+        parser->bytes->data[parser->offset + 3] = (value & 0xFF);
+    }
+    parser->offset += 4;
+}
+
+static void parser_set_float_internal(Parser *parser, const int mantissa, const int exponent ) {
+    int newMantissa = intToSignedBits(mantissa, 24);
+    int newExponent = intToSignedBits(exponent, 8);
+    guint8* value = parser->bytes->data;
+    if (parser->byteOrder == LITTLE_ENDIAN) {
+        value[parser->offset] = (newMantissa & 0xFF);
+        value[parser->offset + 1] = ((newMantissa >> 8) & 0xFF);
+        value[parser->offset + 2] = ((newMantissa >> 16) & 0xFF);
+        value[parser->offset + 3] += (newExponent & 0xFF);
+    } else {
+        value[parser->offset] += (newExponent & 0xFF);
+        value[parser->offset + 1] = ((newMantissa >> 16) & 0xFF);
+        value[parser->offset + 2] = ((newMantissa >> 8) & 0xFF);
+        value[parser->offset + 3] = (newMantissa & 0xFF);
+    }
+    parser->offset += 4;
+}
+
+void parser_set_float(Parser *parser, const float value, const guint8 precision) {
+    prepare_byte_array(parser, parser->offset + 4);
+    float mantissa = (float) (value * pow(10, precision));
+    parser_set_float_internal(parser, (int) mantissa, -precision);
+}
+
+GByteArray* parser_get_byte_array(Parser *parser) {
+    return parser->bytes;
+}
+
