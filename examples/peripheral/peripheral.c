@@ -68,18 +68,6 @@ void on_central_state_changed(Adapter *adapter, Device *device) {
     }
 }
 
-char *on_local_char_read(const Application *application, const char *address, const char *service_uuid,
-                        const char *char_uuid) {
-    if (g_str_equal(service_uuid, GHS_SERVICE_UUID) && g_str_equal(char_uuid, OBSERVATION_SCHEDULE_CHANGED_CHARACTERISTIC_UUID)) {
-        const guint8 bytes[] = {0x06, 0x6f, 0x01, 0x00, 0xff, 0xe6, 0x07, 0x03, 0x03, 0x10, 0x04, 0x00, 0x01};
-        GByteArray *byteArray = g_byte_array_sized_new(sizeof(bytes));
-        g_byte_array_append(byteArray, bytes, sizeof(bytes));
-        binc_application_set_char_value(application, service_uuid, char_uuid, byteArray);
-        return NULL;
-    }
-    return BLUEZ_ERROR_REJECTED;
-}
-
 char *on_local_desc_write(const Application *application, const char *address,
                           const char *service_uuid, const char *char_uuid,
                           const char *desc_uuid, const GByteArray *byteArray) {
@@ -90,8 +78,8 @@ char *on_local_desc_write(const Application *application, const char *address,
 
     Parser *parser = parser_create(byteArray, LITTLE_ENDIAN);
     const guint32 mdc = parser_get_uint32(parser);
-    double schedule_measurement_period = parser_get_float(parser);
-    double schedule_update_interval = parser_get_float(parser);
+    const double schedule_measurement_period = parser_get_float(parser);
+    const double schedule_update_interval = parser_get_float(parser);
 
     if (!(mdc == MDC_PULS_OXIM_SAT_O2 || mdc == MDC_PULS_OXIM_PULS_RATE)) {
         return BLUEZ_ERROR_REJECTED;
@@ -101,17 +89,22 @@ char *on_local_desc_write(const Application *application, const char *address,
         return BLUEZ_ERROR_REJECTED;
     }
 
-    if (schedule_update_interval < schedule_measurement_period) {
+    if (schedule_update_interval < schedule_measurement_period || schedule_update_interval > 10) {
         return BLUEZ_ERROR_REJECTED;
     }
 
-    binc_application_notify(
+
+    if (binc_application_char_is_notifying(
             application,
             GHS_SERVICE_UUID,
-            OBSERVATION_SCHEDULE_CHANGED_CHARACTERISTIC_UUID,
-            byteArray
-            );
-
+            OBSERVATION_SCHEDULE_CHANGED_CHARACTERISTIC_UUID)) {
+        binc_application_notify(
+                application,
+                GHS_SERVICE_UUID,
+                OBSERVATION_SCHEDULE_CHANGED_CHARACTERISTIC_UUID,
+                byteArray
+        );
+    }
     return NULL;
 }
 
@@ -219,7 +212,7 @@ int main(void) {
                                         scheduleByteArray);
 
         binc_application_set_char_read_cb(app, &on_local_char_read);
-        binc_application_set_char_write_cb(app, &on_local_char_write);
+//        binc_application_set_char_write_cb(app, &on_local_char_write);
         binc_application_set_desc_write_cb(app, &on_local_desc_write);
         binc_application_set_char_start_notify_cb(app, &on_local_char_start_notify);
         binc_application_set_char_stop_notify_cb(app, &on_local_char_stop_notify);
