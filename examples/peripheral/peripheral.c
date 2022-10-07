@@ -211,8 +211,6 @@ int main(void) {
                                         OBSERVATION_SCHEDULE_DESCRIPTOR_UUID,
                                         scheduleByteArray);
 
-        binc_application_set_char_read_cb(app, &on_local_char_read);
-//        binc_application_set_char_write_cb(app, &on_local_char_write);
         binc_application_set_desc_write_cb(app, &on_local_desc_write);
         binc_application_set_char_start_notify_cb(app, &on_local_char_start_notify);
         binc_application_set_char_stop_notify_cb(app, &on_local_char_stop_notify);
