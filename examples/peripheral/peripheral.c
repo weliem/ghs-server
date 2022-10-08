@@ -46,8 +46,8 @@
 #define GHS_FEATURES_CHARACTERISTIC_UUID "00007f41-0000-1000-8000-00805f9b34fb"
 #define GHS_CONTROL_POINT_CHARACTERISTIC_UUID "00007f40-0000-1000-8000-00805f9b34fb"
 #define RACP_CHARACTERISTIC_UUID "00002a52-0000-1000-8000-00805f9b34fb"
-#define OBSERVATION_SCHEDULE_CHANGED_CHARACTERISTIC_UUID "00007f3f-0000-1000-8000-00805f9b34fb"
-#define OBSERVATION_SCHEDULE_DESCRIPTOR_UUID "00007f35-0000-1000-8000-00805f9b34fb"
+#define GHS_SCHEDULE_CHANGED_CHAR_UUID "00007f3f-0000-1000-8000-00805f9b34fb"
+#define GHS_SCHEDULE_DESCRIPTOR_UUID "00007f35-0000-1000-8000-00805f9b34fb"
 #define VALID_RANGE_AND_ACCURACY_DESCRIPTOR_UUID "00007f34-0000-1000-8000-00805f9b34fb"
 #define MDC_PULS_OXIM_SAT_O2 150456
 #define MDC_PULS_OXIM_PULS_RATE 149530
@@ -72,6 +72,20 @@ void on_central_state_changed(Adapter *adapter, Device *device) {
     }
 }
 
+
+void on_local_desc_write_success(const Application *application, const char *address,
+                          const char *service_uuid, const char *char_uuid,
+                          const char *desc_uuid, const GByteArray *byteArray) {
+    if (binc_application_char_is_notifying(application, GHS_SERVICE_UUID, GHS_SCHEDULE_CHANGED_CHAR_UUID)) {
+        binc_application_notify(
+                application,
+                GHS_SERVICE_UUID,
+                GHS_SCHEDULE_CHANGED_CHAR_UUID,
+                byteArray
+        );
+    }
+}
+
 char *on_local_desc_write(const Application *application, const char *address,
                           const char *service_uuid, const char *char_uuid,
                           const char *desc_uuid, const GByteArray *byteArray) {
@@ -84,6 +98,7 @@ char *on_local_desc_write(const Application *application, const char *address,
     const guint32 mdc = parser_get_uint32(parser);
     const double schedule_measurement_period = parser_get_float(parser);
     const double schedule_update_interval = parser_get_float(parser);
+    parser_free(parser);
 
     if (!(mdc == MDC_PULS_OXIM_SAT_O2 || mdc == MDC_PULS_OXIM_PULS_RATE)) {
         return BLUEZ_ERROR_REJECTED;
@@ -97,17 +112,6 @@ char *on_local_desc_write(const Application *application, const char *address,
         return BLUEZ_ERROR_REJECTED;
     }
 
-    if (binc_application_char_is_notifying(
-            application,
-            GHS_SERVICE_UUID,
-            OBSERVATION_SCHEDULE_CHANGED_CHARACTERISTIC_UUID)) {
-        binc_application_notify(
-                application,
-                GHS_SERVICE_UUID,
-                OBSERVATION_SCHEDULE_CHANGED_CHARACTERISTIC_UUID,
-                byteArray
-        );
-    }
     return NULL;
 }
 
@@ -213,14 +217,14 @@ int main(void) {
         binc_application_add_characteristic(
                 app,
                 GHS_SERVICE_UUID,
-                OBSERVATION_SCHEDULE_CHANGED_CHARACTERISTIC_UUID,
+                GHS_SCHEDULE_CHANGED_CHAR_UUID,
                 GATT_CHR_PROP_INDICATE);
 
         binc_application_add_descriptor(
                 app,
                 GHS_SERVICE_UUID,
                 GHS_FEATURES_CHARACTERISTIC_UUID,
-                OBSERVATION_SCHEDULE_DESCRIPTOR_UUID,
+                GHS_SCHEDULE_DESCRIPTOR_UUID,
                 GATT_CHR_PROP_READ | GATT_CHR_PROP_WRITE);
 
         // Set initial value for Observation Schedule Descriptor
@@ -232,12 +236,13 @@ int main(void) {
         binc_application_set_desc_value(app,
                                         GHS_SERVICE_UUID,
                                         GHS_FEATURES_CHARACTERISTIC_UUID,
-                                        OBSERVATION_SCHEDULE_DESCRIPTOR_UUID,
+                                        GHS_SCHEDULE_DESCRIPTOR_UUID,
                                         scheduleByteArray);
         parser_free(parser);
 
         // Setup callbacks
         binc_application_set_desc_write_cb(app, &on_local_desc_write);
+        binc_application_set_desc_write_success_cb(app, &on_local_desc_write_success);
         binc_application_set_char_start_notify_cb(app, &on_local_char_start_notify);
         binc_application_set_char_stop_notify_cb(app, &on_local_char_stop_notify);
         binc_adapter_register_application(default_adapter, app);
@@ -246,7 +251,7 @@ int main(void) {
     }
 
     // Bail out after some time
-    g_timeout_add_seconds(600, callback, loop);
+    g_timeout_add_seconds(60, callback, loop);
 
     // Start the mainloop
     g_main_loop_run(loop);

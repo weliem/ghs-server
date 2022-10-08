@@ -71,6 +71,12 @@ typedef char *(*onLocalDescriptorWrite)(const Application *application, const ch
                                             const char *service_uuid, const char *char_uuid,
                                             const char *desc_uuid, const GByteArray *byteArray);
 
+// This callback is called after a write to a descriptor has been done
+// Use it to take action on successful writes
+typedef void (*onLocalDescriptorWriteSuccess)(const Application *application, const char *address,
+                                        const char *service_uuid, const char *char_uuid,
+                                        const char *desc_uuid, const GByteArray *byteArray);
+
 // Methods
 Application *binc_create_application(const Adapter *adapter);
 
@@ -103,6 +109,8 @@ GByteArray *binc_application_get_char_value(const Application *application, cons
 void binc_application_set_desc_read_cb(Application *application, onLocalDescriptorRead callback);
 
 void binc_application_set_desc_write_cb(Application *application, onLocalDescriptorWrite callback);
+
+void binc_application_set_desc_write_success_cb(Application *application, onLocalDescriptorWriteSuccess callback);
 
 int binc_application_set_desc_value(const Application *application, const char *service_uuid,
                                     const char *char_uuid, const char *desc_uuid, GByteArray *byteArray);

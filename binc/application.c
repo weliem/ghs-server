@@ -117,6 +117,7 @@ struct binc_application {
     onLocalCharacteristicStartNotify on_char_start_notify;
     onLocalCharacteristicStopNotify on_char_stop_notify;
     onLocalDescriptorWrite on_desc_write;
+    onLocalDescriptorWriteSuccess on_desc_write_success;
     onLocalDescriptorRead on_desc_read;
 };
 
@@ -834,7 +835,6 @@ static void binc_internal_descriptor_method_call(GDBusConnection *conn,
                                                 localDescriptor->uuid,
                                                 byteArray);
         }
-        write_options_free(options);
 
         if (result) {
             g_dbus_method_invocation_return_dbus_error(invocation, result, "write error");
@@ -845,6 +845,17 @@ static void binc_internal_descriptor_method_call(GDBusConnection *conn,
         binc_descriptor_set_value(application, localDescriptor, byteArray);
 
         g_dbus_method_invocation_return_value(invocation, g_variant_new("()"));
+
+        if (application->on_desc_write_success != NULL) {
+            application->on_desc_write_success(localDescriptor->application,
+                                               options->device,
+                                               localDescriptor->service_uuid,
+                                               localDescriptor->char_uuid,
+                                               localDescriptor->uuid,
+                                               byteArray);
+        }
+
+        write_options_free(options);
     }
 }
 
@@ -1193,6 +1204,13 @@ void binc_application_set_desc_write_cb(Application *application, onLocalDescrip
     g_assert(callback != NULL);
 
     application->on_desc_write = callback;
+}
+
+void binc_application_set_desc_write_success_cb(Application *application, onLocalDescriptorWriteSuccess callback) {
+    g_assert(application != NULL);
+    g_assert(callback != NULL);
+
+    application->on_desc_write_success = callback;
 }
 
 void binc_application_set_char_start_notify_cb(Application *application, onLocalCharacteristicStartNotify callback) {

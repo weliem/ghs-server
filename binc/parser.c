@@ -93,7 +93,7 @@ guint16 parser_get_uint16(Parser *parser) {
     g_assert(parser != NULL);
     g_assert((parser->offset + 1) < parser->bytes->len);
 
-    guint8 byte1, byte2;
+    guint16 byte1, byte2;
     byte1 = parser->bytes->data[parser->offset];
     byte2 = parser->bytes->data[parser->offset + 1];
     parser->offset = parser->offset + 2;
@@ -108,7 +108,7 @@ gint16 parser_get_sint16(Parser *parser) {
     g_assert(parser != NULL);
     g_assert((parser->offset + 1) < parser->bytes->len);
 
-    guint8 byte1, byte2;
+    gint16 byte1, byte2;
     byte1 = parser->bytes->data[parser->offset];
     byte2 = parser->bytes->data[parser->offset + 1];
     parser->offset = parser->offset + 2;
@@ -273,10 +273,7 @@ GByteArray *binc_get_date_time() {
 }
 
 static void prepare_byte_array(Parser *parser, guint required_length) {
-    GByteArray  *result = g_byte_array_set_size(parser->bytes, required_length);
-    if (result != parser->bytes) {
-        log_debug("parser", "got a new array");
-    }
+    g_byte_array_set_size(parser->bytes, required_length);
 }
 
 static int intToSignedBits(const int i, int size) {
@@ -339,6 +336,7 @@ static void parser_set_float_internal(Parser *parser, const int mantissa, const 
     int newMantissa = intToSignedBits(mantissa, 24);
     int newExponent = intToSignedBits(exponent, 8);
     guint8* value = parser->bytes->data;
+
     if (parser->byteOrder == LITTLE_ENDIAN) {
         value[parser->offset] = (newMantissa & 0xFF);
         value[parser->offset + 1] = ((newMantissa >> 8) & 0xFF);
