@@ -37,6 +37,7 @@ typedef struct parser_instance Parser;
  * @return parser object
  */
 Parser *parser_create(GByteArray *bytes, int byteOrder);
+
 Parser *parser_create_empty(int byteOrder);
 
 void parser_set_offset(Parser *parser, guint offset);
@@ -59,17 +60,30 @@ double parser_get_sfloat(Parser *parser);
 
 double parser_get_float(Parser *parser);
 
-GDateTime* parser_get_date_time(Parser *parser);
+GDateTime *parser_get_date_time(Parser *parser);
 
-GByteArray* binc_get_date_time();
+GByteArray *binc_get_date_time();
 
 GByteArray *binc_get_current_time();
 
 GString *parser_get_string(Parser *parser);
 
+void parser_set_uint8(Parser *parser, guint8 value);
+
+void parser_set_sint8(Parser *parser, gint8 value);
+
 void parser_set_uint16(Parser *parser, guint16 value);
+
+void parser_set_sint16(Parser *parser, gint16 value);
+
 void parser_set_uint32(Parser *parser, guint32 value);
+
+void parser_set_sint32(Parser *parser, gint32 value);
+
+void parser_set_sfloat(Parser *parser, float value, guint8 precision);
+
 void parser_set_float(Parser *parser, float value, guint8 precision);
-GByteArray* parser_get_byte_array(Parser *parser);
+
+GByteArray *parser_get_byte_array(Parser *parser);
 
 #endif //BINC_PARSER_H

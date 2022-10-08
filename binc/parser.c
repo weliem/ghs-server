@@ -286,6 +286,17 @@ static int intToSignedBits(const int i, int size) {
     return i;
 }
 
+void parser_set_uint8(Parser *parser, const guint8 value) {
+    prepare_byte_array(parser, parser->offset + 1);
+
+    parser->bytes->data[parser->offset] = (value & 0xFF);
+    parser->offset += 1;
+}
+
+void parser_set_sint8(Parser *parser, const gint8 value) {
+    parser_set_uint8(parser, intToSignedBits(value, 8));
+}
+
 void parser_set_uint16(Parser *parser, const guint16 value) {
     prepare_byte_array(parser, parser->offset + 2);
 
@@ -297,6 +308,10 @@ void parser_set_uint16(Parser *parser, const guint16 value) {
         parser->bytes->data[parser->offset + 1] = (value & 0xFF);
     }
     parser->offset += 2;
+}
+
+void parser_set_sint16(Parser *parser, const gint16 value) {
+    parser_set_uint16(parser, intToSignedBits(value, 16));
 }
 
 void parser_set_uint32(Parser *parser, const guint32 value) {
@@ -314,6 +329,10 @@ void parser_set_uint32(Parser *parser, const guint32 value) {
         parser->bytes->data[parser->offset + 3] = (value & 0xFF);
     }
     parser->offset += 4;
+}
+
+void parser_set_sint32(Parser *parser, const gint32 value) {
+    parser_set_uint32(parser, intToSignedBits(value, 32));
 }
 
 static void parser_set_float_internal(Parser *parser, const int mantissa, const int exponent ) {
@@ -334,10 +353,32 @@ static void parser_set_float_internal(Parser *parser, const int mantissa, const 
     parser->offset += 4;
 }
 
+static void parser_set_sfloat_internal(Parser *parser, const int mantissa, const int exponent ) {
+    int newMantissa = intToSignedBits(mantissa, 12);
+    int newExponent = intToSignedBits(exponent, 4);
+    guint8* value = parser->bytes->data;
+    if (parser->byteOrder == LITTLE_ENDIAN) {
+        value[parser->offset] = (newMantissa & 0xFF);
+        value[parser->offset + 1] = ((newMantissa >> 8) & 0x0F);
+        value[parser->offset + 1] += ((newExponent & 0x0F) << 4);
+    } else {
+        value[parser->offset] = ((newMantissa >> 8) & 0x0F);
+        value[parser->offset] += ((newExponent & 0x0F) << 4);
+        value[parser->offset + 1] = (newMantissa & 0xFF);
+    }
+    parser->offset += 2;
+}
+
 void parser_set_float(Parser *parser, const float value, const guint8 precision) {
     prepare_byte_array(parser, parser->offset + 4);
     float mantissa = (float) (value * pow(10, precision));
     parser_set_float_internal(parser, (int) mantissa, -precision);
+}
+
+void parser_set_sfloat(Parser *parser, const float value, const guint8 precision) {
+    prepare_byte_array(parser, parser->offset + 2);
+    float mantissa = (float) (value * pow(10, precision));
+    parser_set_sfloat_internal(parser, (int) mantissa, -precision);
 }
 
 GByteArray* parser_get_byte_array(Parser *parser) {
