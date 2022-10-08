@@ -26,6 +26,8 @@
 #include "logger.h"
 #include <time.h>
 
+#define MAX_CHAR_SIZE 512
+
 // IEEE 11073 Reserved float values
 typedef enum {
     MDER_POSITIVE_INFINITY = 0x007FFFFE,
@@ -46,9 +48,15 @@ static const double reserved_float_values[5] = {MDER_POSITIVE_INFINITY, MDER_NaN
 
 Parser *parser_create_empty(int byteOrder) {
     Parser *parser = g_new0(Parser, 1);
-    parser->bytes = g_byte_array_new();
     parser->offset = 0;
     parser->byteOrder = byteOrder;
+    parser->bytes = g_byte_array_sized_new(MAX_CHAR_SIZE);
+
+    // Initialize all values so that valgrind doesn't complain anymore
+    for(int i=0;i<MAX_CHAR_SIZE;i++) {
+        parser->bytes->data[i] = 0;
+    }
+
     return parser;
 }
 
@@ -273,7 +281,7 @@ GByteArray *binc_get_date_time() {
 }
 
 static void prepare_byte_array(Parser *parser, guint required_length) {
-    g_byte_array_set_size(parser->bytes, required_length);
+    parser->bytes = g_byte_array_set_size(parser->bytes, required_length);
 }
 
 static int intToSignedBits(const int i, int size) {
