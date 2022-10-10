@@ -375,9 +375,9 @@ static void parser_set_float_internal(Parser *parser, const int mantissa, const 
         value[parser->offset] = (newMantissa & 0xFF);
         value[parser->offset + 1] = ((newMantissa >> 8) & 0xFF);
         value[parser->offset + 2] = ((newMantissa >> 16) & 0xFF);
-        value[parser->offset + 3] += (newExponent & 0xFF);
+        value[parser->offset + 3] = (newExponent & 0xFF);
     } else {
-        value[parser->offset] += (newExponent & 0xFF);
+        value[parser->offset] = (newExponent & 0xFF);
         value[parser->offset + 1] = ((newMantissa >> 16) & 0xFF);
         value[parser->offset + 2] = ((newMantissa >> 8) & 0xFF);
         value[parser->offset + 3] = (newMantissa & 0xFF);
@@ -426,7 +426,7 @@ void parser_set_elapsed_time(Parser *parser) {
     gint64 seconds_since_unix_epoch = g_date_time_to_unix(now);
     gint64 seconds_since_ets_epoch = seconds_since_unix_epoch - elapsed_time_epoch;
 
-    parser_set_uint8(parser, 0x00); // Flags
+    parser_set_uint8(parser, 0x22); // Flags
     parser_set_uint48(parser, seconds_since_ets_epoch);
     parser_set_uint8(parser, 0x06); // Cellular Network
     parser_set_uint8(parser, 0x00); // Tz/DST offset

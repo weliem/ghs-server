@@ -77,12 +77,13 @@ void on_central_state_changed(Adapter *adapter, Device *device) {
 }
 
 GByteArray *createObservation(float spo2_value) {
-    const guint16 length = 30;
+    const guint16 length = 25;
     float measurement_duration = 1.0f;
     Parser *parser = parser_create_empty(length, LITTLE_ENDIAN);
+    parser_set_uint8(parser, 0x03);
     parser_set_uint8(parser, NUMERIC_OBSERVATION);
     parser_set_uint16(parser, length);
-    parser_set_uint16(parser, 0x0F);
+    parser_set_uint16(parser, 0x07); // Flags
     parser_set_uint32(parser, MDC_PULS_OXIM_SAT_O2);
     parser_set_elapsed_time(parser);
     parser_set_float(parser, measurement_duration, 1);
@@ -100,6 +101,7 @@ void sendObservation(float spo2_value) {
     if (binc_application_char_is_notifying(app, GHS_SERVICE_UUID, OBSERVATION_CHARACTERISTIC_UUID)) {
 
         GByteArray *observation = createObservation(spo2_value);
+
         binc_application_notify(
                 app,
                 GHS_SERVICE_UUID,
@@ -160,7 +162,7 @@ char *on_local_desc_write(const Application *application, const char *address,
 
 gboolean observation_timer_expired(gpointer data) {
     log_debug(TAG, "observation timer expired");
-    if (app == NULL) FALSE;
+    if (app == NULL) return FALSE;
 
     sendNextObservation();
     return TRUE;
