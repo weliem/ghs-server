@@ -38,7 +38,7 @@ typedef struct parser_instance Parser;
  */
 Parser *parser_create(GByteArray *bytes, int byteOrder);
 
-Parser *parser_create_empty(int byteOrder);
+Parser *parser_create_empty(guint reserved_size, int byteOrder);
 
 void parser_set_offset(Parser *parser, guint offset);
 
@@ -80,9 +80,15 @@ void parser_set_uint32(Parser *parser, guint32 value);
 
 void parser_set_sint32(Parser *parser, gint32 value);
 
+void parser_set_uint48(Parser *parser, const guint64 value);
+
 void parser_set_sfloat(Parser *parser, float value, guint8 precision);
 
 void parser_set_float(Parser *parser, float value, guint8 precision);
+
+void parser_set_string(Parser *parser, char *string);
+
+void parser_set_elapsed_time(Parser *parser);
 
 GByteArray *parser_get_byte_array(Parser *parser);
 

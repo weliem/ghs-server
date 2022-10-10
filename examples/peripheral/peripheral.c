@@ -51,12 +51,16 @@
 #define VALID_RANGE_AND_ACCURACY_DESCRIPTOR_UUID "00007f34-0000-1000-8000-00805f9b34fb"
 #define MDC_PULS_OXIM_SAT_O2 150456
 #define MDC_PULS_OXIM_PULS_RATE 149530
+#define MDC_DIM_PER_CENT 0x0220
+
+#define NUMERIC_OBSERVATION 0
+
 
 GMainLoop *loop = NULL;
 Adapter *default_adapter = NULL;
 Advertisement *advertisement = NULL;
 Application *app = NULL;
-
+guint observation_timer_ref = 0;
 
 void on_powered_state_changed(Adapter *adapter, gboolean state) {
     log_debug(TAG, "powered '%s' (%s)", state ? "on" : "off", binc_adapter_get_path(adapter));
@@ -72,11 +76,50 @@ void on_central_state_changed(Adapter *adapter, Device *device) {
     }
 }
 
+GByteArray *createObservation(float spo2_value) {
+    const guint16 length = 30;
+    float measurement_duration = 1.0f;
+    Parser *parser = parser_create_empty(length, LITTLE_ENDIAN);
+    parser_set_uint8(parser, NUMERIC_OBSERVATION);
+    parser_set_uint16(parser, length);
+    parser_set_uint16(parser, 0x0F);
+    parser_set_uint32(parser, MDC_PULS_OXIM_SAT_O2);
+    parser_set_elapsed_time(parser);
+    parser_set_float(parser, measurement_duration, 1);
+    parser_set_uint16(parser, MDC_DIM_PER_CENT);
+    parser_set_float(parser, spo2_value,1);
+
+    GByteArray *result = parser_get_byte_array(parser);
+    parser_free(parser);
+    return result;
+}
+
+void sendObservation(float spo2_value) {
+    if (app == NULL) return;
+
+    if (binc_application_char_is_notifying(app, GHS_SERVICE_UUID, OBSERVATION_CHARACTERISTIC_UUID)) {
+
+        GByteArray *observation = createObservation(spo2_value);
+        binc_application_notify(
+                app,
+                GHS_SERVICE_UUID,
+                OBSERVATION_CHARACTERISTIC_UUID,
+                observation
+        );
+        g_byte_array_unref(observation);
+    }
+}
+
+void sendNextObservation() {
+    sendObservation(96.1f);
+}
 
 void on_local_desc_write_success(const Application *application, const char *address,
                           const char *service_uuid, const char *char_uuid,
                           const char *desc_uuid, const GByteArray *byteArray) {
+
     if (binc_application_char_is_notifying(application, GHS_SERVICE_UUID, GHS_SCHEDULE_CHANGED_CHAR_UUID)) {
+
         binc_application_notify(
                 application,
                 GHS_SERVICE_UUID,
@@ -115,12 +158,26 @@ char *on_local_desc_write(const Application *application, const char *address,
     return NULL;
 }
 
+gboolean observation_timer_expired(gpointer data) {
+    log_debug(TAG, "observation timer expired");
+    if (app == NULL) FALSE;
+
+    sendNextObservation();
+    return TRUE;
+}
+
 void on_local_char_start_notify(const Application *application, const char *service_uuid, const char *char_uuid) {
     log_debug(TAG, "on start notify");
+    if (g_str_equal(char_uuid, OBSERVATION_CHARACTERISTIC_UUID)) {
+        observation_timer_ref = g_timeout_add_seconds(2, observation_timer_expired, NULL);
+    }
 }
 
 void on_local_char_stop_notify(const Application *application, const char *service_uuid, const char *char_uuid) {
     log_debug(TAG, "on stop notify");
+    if (g_str_equal(char_uuid, OBSERVATION_CHARACTERISTIC_UUID)) {
+        g_source_remove(observation_timer_ref);
+    }
 }
 
 gboolean callback(gpointer data) {
@@ -206,7 +263,7 @@ int main(void) {
                 app,
                 GHS_SERVICE_UUID,
                 OBSERVATION_CHARACTERISTIC_UUID,
-                GATT_CHR_PROP_READ | GATT_CHR_PROP_INDICATE);
+                GATT_CHR_PROP_INDICATE);
 
         binc_application_add_characteristic(
                 app,
@@ -228,7 +285,7 @@ int main(void) {
                 GATT_CHR_PROP_READ | GATT_CHR_PROP_WRITE);
 
         // Set initial value for Observation Schedule Descriptor
-        Parser *parser = parser_create_empty(LITTLE_ENDIAN);
+        Parser *parser = parser_create_empty(12, LITTLE_ENDIAN);
         parser_set_uint32(parser, MDC_PULS_OXIM_SAT_O2);
         parser_set_float(parser, 1.0f, 1);
         parser_set_float(parser, 1.0f, 1);
@@ -239,6 +296,12 @@ int main(void) {
                                         GHS_SCHEDULE_DESCRIPTOR_UUID,
                                         scheduleByteArray);
         parser_free(parser);
+
+        GByteArray *manufacturer = g_byte_array_new_take((guint8*) g_strdup("Philips"), 7);
+        binc_application_set_char_value(app, DIS_SERVICE_UUID, DIS_MANUFACTURER_UUID, manufacturer);
+
+        GByteArray *model = g_byte_array_new_take((guint8*) g_strdup("POX22"), 5);
+        binc_application_set_char_value(app, DIS_SERVICE_UUID, DIS_MODEL_NUMBER_UUID, model);
 
         // Setup callbacks
         binc_application_set_desc_write_cb(app, &on_local_desc_write);

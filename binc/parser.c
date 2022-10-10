@@ -46,14 +46,14 @@ struct parser_instance {
 static const double reserved_float_values[5] = {MDER_POSITIVE_INFINITY, MDER_NaN, MDER_NaN, MDER_NaN,
                                                 MDER_NEGATIVE_INFINITY};
 
-Parser *parser_create_empty(int byteOrder) {
+Parser *parser_create_empty(guint reserved_size, int byteOrder) {
     Parser *parser = g_new0(Parser, 1);
     parser->offset = 0;
     parser->byteOrder = byteOrder;
-    parser->bytes = g_byte_array_sized_new(MAX_CHAR_SIZE);
+    parser->bytes = g_byte_array_sized_new(reserved_size);
 
     // Initialize all values so that valgrind doesn't complain anymore
-    for(int i=0;i<MAX_CHAR_SIZE;i++) {
+    for(guint i=0;i<reserved_size;i++) {
         parser->bytes->data[i] = 0;
     }
 
@@ -282,6 +282,10 @@ GByteArray *binc_get_date_time() {
 
 static void prepare_byte_array(Parser *parser, guint required_length) {
     parser->bytes = g_byte_array_set_size(parser->bytes, required_length);
+
+    for(guint i=parser->offset; i<required_length-1; i++) {
+        parser->bytes->data[i] = 0;
+    }
 }
 
 static int intToSignedBits(const int i, int size) {
@@ -336,6 +340,28 @@ void parser_set_uint32(Parser *parser, const guint32 value) {
     parser->offset += 4;
 }
 
+
+void parser_set_uint48(Parser *parser, const guint64 value) {
+    prepare_byte_array(parser, parser->offset + 6);
+
+    if (parser->byteOrder == LITTLE_ENDIAN) {
+        parser->bytes->data[parser->offset] = (value & 0xFF);
+        parser->bytes->data[parser->offset + 1] = (value >> 8);
+        parser->bytes->data[parser->offset + 2] = (value >> 16);
+        parser->bytes->data[parser->offset + 3] = (value >> 24);
+        parser->bytes->data[parser->offset + 4] = (value >> 32);
+        parser->bytes->data[parser->offset + 5] = (value >> 40);
+    } else {
+        parser->bytes->data[parser->offset] = (value >> 40);
+        parser->bytes->data[parser->offset + 1] = (value >> 32);
+        parser->bytes->data[parser->offset + 2] = (value >> 24);
+        parser->bytes->data[parser->offset + 3] = (value >> 16);
+        parser->bytes->data[parser->offset + 4] = (value >> 8);
+        parser->bytes->data[parser->offset + 5] = (value & 0xFF);
+    }
+    parser->offset += 6;
+}
+
 void parser_set_sint32(Parser *parser, const gint32 value) {
     parser_set_uint32(parser, intToSignedBits(value, 32));
 }
@@ -385,6 +411,25 @@ void parser_set_sfloat(Parser *parser, const float value, const guint8 precision
     prepare_byte_array(parser, parser->offset + 2);
     float mantissa = (float) (value * pow(10, precision));
     parser_set_sfloat_internal(parser, (int) mantissa, -precision);
+}
+
+void parser_set_string(Parser *parser, char *string) {
+    prepare_byte_array(parser, parser->offset + strlen(string));
+    g_byte_array_append(parser->bytes, (guint8*) string, strlen(string));
+}
+
+void parser_set_elapsed_time(Parser *parser) {
+    prepare_byte_array(parser, parser->offset + 9);
+
+    const gint64 elapsed_time_epoch = 946681200;
+    GDateTime *now = g_date_time_new_now_local();
+    gint64 seconds_since_unix_epoch = g_date_time_to_unix(now);
+    gint64 seconds_since_ets_epoch = seconds_since_unix_epoch - elapsed_time_epoch;
+
+    parser_set_uint8(parser, 0x00); // Flags
+    parser_set_uint48(parser, seconds_since_ets_epoch);
+    parser_set_uint8(parser, 0x06); // Cellular Network
+    parser_set_uint8(parser, 0x00); // Tz/DST offset
 }
 
 GByteArray* parser_get_byte_array(Parser *parser) {
